@@ -234,5 +234,5 @@ In docker, you can find the following scripts in `/home/user/aurora/docker/examp
 
 # Contact
 
-For more information, contact [mrphrazer](https://github.com/mrphrazer) or [m_u00d8](https://github.com/mu00d8).
+For more information, contact [mrphrazer](https://github.com/mrphrazer) ([@mr_phrazer](https://twitter.com/mr_phrazer)) or [m_u00d8](https://github.com/mu00d8) ([@m_u00d8](https://twitter.com/m_u00d8)).
 
