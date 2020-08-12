@@ -1,0 +1,27 @@
+[package]
+name = "root_cause_analysis"
+version = "0.1.0"
+authors = ["Tim Blazytko <tim@blazytko.to>", "Moritz Schlögel <moritz.schloegel@rub.de>"]
+
+edition = "2018"
+
+[profile.release]
+lto = true
+
+[dependencies]
+trace_analysis = { path = "../trace_analysis"}
+predicate_monitoring = { path = "../predicate_monitoring"}
+structopt="*"
+serde = { version = "*", features = ["derive"] }
+serde_json="*"
+glob = "*"
+itertools="*"
+rayon="*"
+
+[[bin]]
+name = "rca"
+path = "src/main.rs"
+
+[[bin]]
+name = "addr2line"
+path = "src/addr2line.rs"

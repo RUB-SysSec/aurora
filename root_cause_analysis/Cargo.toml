@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+  "predicate_monitoring",
+  "trace_analysis",
+  "root_cause_analysis",
+]

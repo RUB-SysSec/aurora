@@ -1,0 +1,67 @@
+diff --git a/afl-fuzz.c b/afl-fuzz.c
+index 01b4afe..4f1549b 100644
+--- a/afl-fuzz.c
++++ b/afl-fuzz.c
+@@ -280,6 +280,10 @@ static s8  interesting_8[]  = { INTERESTING_8 };
+ static s16 interesting_16[] = { INTERESTING_8, INTERESTING_16 };
+ static s32 interesting_32[] = { INTERESTING_8, INTERESTING_16, INTERESTING_32 };
+ 
++/* Crash exploration */
++
++static u32 unique_non_crash_id = 0;
++
+ /* Fuzzing stages */
+ 
+ enum {
+@@ -3280,7 +3284,26 @@ keep_as_crash:
+ 
+     case FAULT_ERROR: FATAL("Unable to execute target application");
+ 
+-    default: return keeping;
++    default: 
++    /* Crash exploration mode */
++      if (!(hnb = has_new_bits(virgin_bits)))
++        return keeping;
++#ifndef SIMPLE_FILES
++
++      fn = alloc_printf("%s/non_crashes/id:%06u,%s_%u", out_dir, queued_paths,
++                      describe_op(hnb), unique_non_crash_id);
++
++#else
++
++      fn = alloc_printf("%s/non_crashes/id_%06u_%u", out_dir, queued_paths, unique_non_crash_id);
++
++#endif /* ^!SIMPLE_FILES */
++      fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, 0600);
++      if (fd < 0) PFATAL("Unable to create '%s'", fn);
++      ck_write(fd, mem, len, fn);
++      close(fd);
++      unique_non_crash_id += 1;
++      return keeping;
+ 
+   }
+ 
+@@ -3746,6 +3769,11 @@ static void maybe_delete_out_dir(void) {
+   if (delete_files(fn, CASE_PREFIX)) goto dir_cleanup_failed;
+   ck_free(fn);
+ 
++  /* Crash exploration */
++  fn = alloc_printf("%s/non_crashes", out_dir);
++  if (delete_files(fn, CASE_PREFIX)) goto dir_cleanup_failed;
++  ck_free(fn);
++
+   /* All right, let's do <out_dir>/crashes/id:* and <out_dir>/hangs/id:*. */
+ 
+   if (!in_place_resume) {
+@@ -7117,6 +7145,11 @@ EXP_ST void setup_dirs_fds(void) {
+   if (mkdir(tmp, 0700)) PFATAL("Unable to create '%s'", tmp);
+   ck_free(tmp);
+ 
++  /* Crash exploration */
++  tmp = alloc_printf("%s/non_crashes", out_dir);
++  if (mkdir(tmp, 0700)) PFATAL("Unable to create '%s'", tmp);
++  ck_free(tmp);
++
+   /* Top-level directory for queue metadata used for session
+      resume and related tasks. */
+ 
