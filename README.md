@@ -1,7 +1,7 @@
 # Aurora: Statistical Crash Analysis for Automated Root Cause Explanation
 <a href="https://www.usenix.org/conference/usenixsecurity20/presentation/blazytko"> <img align="right" width="200"  src="paper.png"> </a>
 
-Aurora is a tool for automated root cause analysis. It is based on our [paper](https://www.usenix.org/system/files/sec20-blazytko.pdf) ([slides](XXX), [recording](XXX)):
+Aurora is a tool for automated root cause analysis. It is based on our [paper](https://www.usenix.org/system/files/sec20-blazytko.pdf) ([slides](https://www.usenix.org/system/files/sec20_slides_blazytko.pdf), [recording](https://2459d6dc103cb5933875-c0245c5c937c5dedcca3f1764ecc9b2f.ssl.cf2.rackcdn.com/sec20/videos/0812/s3_software_security_and_verification/4_sec20fall-paper610-presentation-video.mp4)):
 
 ```
 @inproceedings{blazytko2020aurora,
