@@ -25,10 +25,10 @@ pub struct TraceAnalyzer {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct MemoryAddresses {
-    pub heap_start: usize,
-    pub heap_end: usize,
-    pub stack_start: usize,
-    pub stack_end: usize,
+    pub heap_start: Option<usize>,
+    pub heap_end: Option<usize>,
+    pub stack_start: Option<usize>,
+    pub stack_end: Option<usize>,
 }
 
 impl MemoryAddresses {

@@ -60,22 +60,26 @@ impl PredicateSynthesizer {
             .filter(|reg_index| *reg_index != 23)
             /* skip all heap addresses */
             .filter(|reg_index| {
+                trace_analyzer.memory_addresses.heap_start.is_none() ||
+                trace_analyzer.memory_addresses.heap_end.is_none() ||
                 !trace_analyzer
                     .values_at_address(address, selector, Some(*reg_index))
                     .into_iter()
                     .all(|v: u64| {
-                        trace_analyzer.memory_addresses.heap_start <= v as usize
-                            && v as usize <= trace_analyzer.memory_addresses.heap_end
+                        trace_analyzer.memory_addresses.heap_start.unwrap() <= v as usize
+                            && v as usize <= trace_analyzer.memory_addresses.heap_end.unwrap()
                     })
             })
             /* skip all stack addresses */
             .filter(|reg_index| {
+                trace_analyzer.memory_addresses.stack_start.is_none() ||
+                trace_analyzer.memory_addresses.stack_end.is_none() ||
                 !trace_analyzer
                     .values_at_address(address, selector, Some(*reg_index))
                     .into_iter()
                     .all(|v: u64| {
-                        trace_analyzer.memory_addresses.stack_start <= v as usize
-                            && v as usize <= trace_analyzer.memory_addresses.stack_end
+                        trace_analyzer.memory_addresses.stack_start.unwrap() <= v as usize
+                            && v as usize <= trace_analyzer.memory_addresses.stack_end.unwrap()
                     })
             })
             .flat_map(|reg_index| {
