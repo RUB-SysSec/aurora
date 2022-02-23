@@ -100,7 +100,7 @@ def check_trace_log(path: str) -> bool:
     return SUCCESS
 
 
-def trace_input(src_path: str, target_exe: str, should_zip: bool, trace_target: str) -> None:
+def trace_input(src_path: str, target_exe: str, eval_dir: str, should_zip: bool, trace_target: str) -> None:
     """Trace a directory within a given path."""
     if trace_target == "README.txt": # Skip README file
         return
@@ -109,11 +109,23 @@ def trace_input(src_path: str, target_exe: str, should_zip: bool, trace_target: 
     src_file = os.path.join(src_path, subdir, trace_target)
     pin_logfile = os.path.join(TMP_PATH, "logs", trace_target + "_trace.log")
     outfile = os.path.join(TMP_PATH, subdir, trace_target + "_trace")
+    
+    args_file = os.path.join(eval_dir, 'arguments.txt')
+    with open(args_file, 'r') as f:
+        arguments = f.read()
+    
+    if "@@" in arguments:
+        arguments = arguments.replace("@@", src_file)
+    else:
+        arguments += f" < {src_file}"
+    
+    '''
     if "@@" in target_exe:
         target_exe = target_exe.replace("@@", src_file)
     else:
         target_exe += f" < {src_file}"
-    cmd = f"{ASAN_OPTIONS} {PIN_EXE} -t {PIN_TOOL} -o {outfile} -logfile {pin_logfile} -- {target_exe}"
+    '''
+    cmd = f"{ASAN_OPTIONS} {PIN_EXE} -t {PIN_TOOL} -o {outfile} -logfile {pin_logfile} -- {target_exe} {arguments}"
     logger.debug(f"CMD: {cmd}")
     try:
         subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=PIN_TIMEOUT)
@@ -163,7 +175,7 @@ def cleanup(target_exe: str, save_path: str) -> None:
     logger.info(f"Cleanup time: {move_time - start_time}s")
 
 
-def trace_all(target_exe: str, src_path: str, save_path: str, subdirs: List[str], should_zip: bool = True) -> bool:
+def trace_all(target_exe: str, src_path: str, save_path: str, subdirs: List[str], eval_dir: str, should_zip: bool = True) -> bool:
     """Manage parallel tracing of all files"""
     if preliminary_checks(target_exe) == FAILURE:
         return FAILURE
@@ -185,7 +197,7 @@ def trace_all(target_exe: str, src_path: str, save_path: str, subdirs: List[str]
     logger.info(f"Processing {len(files)} files in {len(subdirs)} subdirs at {src_path}")
     before_time = time.time()
     with multiprocessing.Pool(PARALLEL_PROCESSES) as pool:
-        func = partial(trace_input, src_path, target_exe, should_zip)
+        func = partial(trace_input, src_path, target_exe, eval_dir, should_zip)
         pool.map(func, files)
     trace_time = time.time() - before_time
     avg_time = (PARALLEL_PROCESSES * trace_time) / len(files)
@@ -209,8 +221,8 @@ def trace_all(target_exe: str, src_path: str, save_path: str, subdirs: List[str]
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        logger.critical("Usage: ./tracing.py <PATH TO BINARY> <INPUT_FOLDER> <OUTPUT FOLDER>")
-        print("Usage: ./tracing.py <PATH TO BINARY> <INPUT_FOLDER> <OUTPUT FOLDER>")
+        logger.critical("Usage: ./tracing.py <PATH TO BINARY> <INPUT_FOLDER> <OUTPUT FOLDER> <EVAL FOLDER>")
+        print("Usage: ./tracing.py <PATH TO BINARY> <INPUT_FOLDER> <OUTPUT FOLDER> <EVAL FOLDER>")
         sys.exit(1)
 
     ### Logging handlers
@@ -235,5 +247,5 @@ if __name__ == "__main__":
     trace_logger.addHandler(c_handler)
     trace_logger.addHandler(f_handler)
 
-    if trace_all(target_exe=sys.argv[1], src_path=sys.argv[2], save_path=sys.argv[3], subdirs=SUBDIRS) == SUCCESS:
+    if trace_all(target_exe=sys.argv[1], src_path=sys.argv[2], save_path=sys.argv[3], subdirs=SUBDIRS, eval_dir=sys.argv[4]) == SUCCESS:
         logger.info("Finished tracing run")
