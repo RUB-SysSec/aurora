@@ -4,6 +4,8 @@ use std::collections::HashMap;
 use trace_analysis::predicates::SerializedPredicate;
 use trace_analysis::trace_analyzer::TraceAnalyzer;
 
+const MIN_SCORE: float = 0.9;
+
 pub fn analyze_traces(config: &Config) {
     let trace_analysis_output_dir = Some(config.eval_dir.to_string());
     let crash_blacklist_path = if config.blacklist_crashes() {
@@ -21,7 +23,8 @@ pub fn analyze_traces(config: &Config) {
     println!("dumping linear scores");
     trace_analyzer.dump_scores(&trace_analysis_config, false, false);
 
-    let predicates = trace_analyzer.get_predicates_better_than(0.9);
+    let predicates = trace_analyzer.get_predicates_better_than(MIN_SCORE);
+    println!("found {} predicates with score better than {}", &predicates.len(), MIN_SCORE);
 
     serialize_mnemonics(config, &predicates, &trace_analyzer);
 
