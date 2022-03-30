@@ -23,10 +23,14 @@ fn predicate_order(
 
 pub fn rank_predicates(config: &Config) {
     let rankings = deserialize_rankings(config);
+    assert!(!rankings.is_empty(), f"No rankings in rankings.json");
     let mnemonics = deserialize_mnemonics(config);
     let mut predicates = deserialize_predicates(config);
 
-    predicates.par_sort_by(|p1, p2| predicate_order(p1, p2, &rankings));
+    // Only sort if we have more than one predicate
+    if predicates.len() > 1 {
+        predicates.par_sort_by(|p1, p2| predicate_order(p1, p2, &rankings));
+    }
 
     dump_ranked_predicates(config, &predicates, &mnemonics, &rankings);
 }
