@@ -23,7 +23,7 @@ fn predicate_order(
 
 pub fn rank_predicates(config: &Config) {
     let rankings = deserialize_rankings(config);
-    assert!(!rankings.is_empty(), f"No rankings in rankings.json");
+    assert!(!rankings.is_empty(), "No rankings in rankings.json");
     let mnemonics = deserialize_mnemonics(config);
     let mut predicates = deserialize_predicates(config);
 

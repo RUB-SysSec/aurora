@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use trace_analysis::predicates::SerializedPredicate;
 use trace_analysis::trace_analyzer::TraceAnalyzer;
 
-const MIN_SCORE: float = 0.9;
+const MIN_SCORE: f64 = 0.9;
 
 pub fn analyze_traces(config: &Config) {
     let trace_analysis_output_dir = Some(config.eval_dir.to_string());
