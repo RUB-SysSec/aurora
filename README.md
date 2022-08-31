@@ -216,9 +216,14 @@ echo performance | tee cpu*/cpufreq/scaling_governor
 echo 0 | tee /proc/sys/kernel/randomize_va_space
 ```
 
-Then, build and run the docker image:
+Then, build (or [pull from Dockerhub](https://hub.docker.com/repository/docker/mu00d8/aurora)) and run the docker image:
 ```
+# either pull the image from dockerhub
+./pull.sh
+# *or*, alternatively, manually build it
 ./build.sh
+
+# start container
 ./run.sh
 ```
 
