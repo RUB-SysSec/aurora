@@ -21,7 +21,7 @@ RUN useradd --shell /bin/bash -c "" -m -u ${USER_UID} -g user -G sudo user
 WORKDIR "/home/user"
 USER user
 
-RUN wget -O ~/.gdbinit-gef.py -q https://tinyurl.com/gef-master \
+RUN wget -O ~/.gdbinit-gef.py -q https://gef.blah.cat/sh \
   && echo source ~/.gdbinit-gef.py >> ~/.gdbinit
 
 
