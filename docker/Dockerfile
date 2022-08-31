@@ -17,7 +17,7 @@ WORKDIR /tmp
 
 #Create user "user"
 RUN groupadd -g ${USER_GID} user
-RUN useradd --shell /bin/bash -c "" -m -u ${USER_UID} -g user -G sudo user
+RUN useradd -l --shell /bin/bash -c "" -m -u ${USER_UID} -g user -G sudo user
 WORKDIR "/home/user"
 USER user
 
